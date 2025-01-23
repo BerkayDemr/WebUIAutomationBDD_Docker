@@ -12,13 +12,13 @@ import java.time.Duration;
 import java.util.List;
 
 // A class using common methods.
-
 public class BaseMethods {
     WebDriver driver;
 
     public BaseMethods(WebDriver driver) {
         this.driver = driver;
     }
+
     // Method that scrolls the related element.
     public void scrollToElement(By locator){
         //The scroll continues until the desired web element is displayed.
@@ -36,6 +36,7 @@ public class BaseMethods {
         Actions action = new Actions(driver);
         action.moveToElement(element).perform();
     }
+
     // Method that finds the web element.
     public WebElement find(By locator){
         return driver.findElement(locator);
@@ -46,10 +47,12 @@ public class BaseMethods {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
         wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
     }
+
     public void click(WebElement webElement, int timeOut) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOut));
         wait.until(ExpectedConditions.elementToBeClickable(webElement)).click();
     }
+
     // Text input method.
     public void type(By locator, String text){
         find(locator).sendKeys(text);
