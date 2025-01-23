@@ -1,0 +1,62 @@
+version: "3.9"
+services:
+  selenium-hub:
+    image: selenium/hub:4.10.0
+    container_name: selenium-hub
+    ports:
+      - "4444:4444" # Access port of Selenium Grid
+    networks:
+       test-network:
+        ipv4_address: 172.19.0.2
+  chrome:
+    image: selenium/node-chrome:4.10.0
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    shm_size: "2g" # Larger shared memory space
+    networks:
+      - test-network
+
+  firefox:
+    image: selenium/node-firefox:4.10.0
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    shm_size: "2g"
+    networks:
+      - test-network
+  edge:
+    image: selenium/node-edge:4.10.0
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    shm_size: "2g"
+    networks:
+      - test-network
+  tests:
+    build:
+      context: .
+    depends_on:
+      - selenium-hub
+    environment:
+      - BROWSER=chrome # Run in Chrome by default
+    command: mvn test -Dgrid=true -Dallure.results.directory=/allure-results
+    networks:
+      - test-network
+    volumes:
+      - ./allure-results:/allure-results
+networks:
+  test-network:
+    ipam:
+      config:
+        - subnet: "172.19.0.0/24"
+        - subnet: "2001:3984:3989::/64"
